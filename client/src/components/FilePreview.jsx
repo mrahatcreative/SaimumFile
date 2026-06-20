@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { downloadFile } from '../api/client'
 import FileIcon from './FileIcon'
+import Icon from './Icon'
 
 function fmtSize(bytes) {
   if (!bytes) return '0 B'
@@ -63,10 +64,10 @@ export default function FilePreview({ file, bucket, onClose, onDownload }) {
           </div>
           <div className="flex items-center gap-2">
             <button onClick={() => onDownload(file.id)} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-pointer" title="Download">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+              <Icon name="download" size={20} />
             </button>
             <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-pointer" title="Close">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              <Icon name="x" size={20} />
             </button>
           </div>
         </div>
@@ -74,7 +75,7 @@ export default function FilePreview({ file, bucket, onClose, onDownload }) {
         <div className="flex-1 overflow-auto bg-gray-50 dark:bg-[#1e1e1f] flex items-center justify-center p-6 min-h-[300px]">
           {loading ? (
             <div className="text-center">
-              <svg className="w-8 h-8 text-zinc-700 dark:text-zinc-300 animate-spin mx-auto" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+              <Icon name="spinner" size={32} className="text-zinc-700 dark:text-zinc-300 animate-spin mx-auto" />
               <p className="text-sm text-gray-400 dark:text-gray-550 mt-2">Loading preview...</p>
             </div>
           ) : blobUrl && isImage ? (
@@ -84,7 +85,7 @@ export default function FilePreview({ file, bucket, onClose, onDownload }) {
           ) : blobUrl && isAudio ? (
             <div className="text-center p-12">
               <div className="w-24 h-24 bg-zinc-100 dark:bg-zinc-800/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-12 h-12 text-zinc-700 dark:text-zinc-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>
+                <Icon name="music" size={48} className="text-zinc-700 dark:text-zinc-300" />
               </div>
               <audio src={blobUrl} controls className="w-full max-w-sm" />
             </div>

@@ -12,6 +12,7 @@ import DetailsPanel from '../components/DetailsPanel'
 import FilePreview from '../components/FilePreview'
 import SearchBar from '../components/SearchBar'
 import { useTheme } from '../components/ThemeContext'
+import Icon from '../components/Icon'
 
 function fmtSize(bytes) {
   if (!bytes) return '0 B'
@@ -32,9 +33,9 @@ function fmtDate(d) {
 }
 
 const sidebarNav = [
-  { id: 'drive', label: 'My Files', icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z' },
-  { id: 'settings', label: 'Bucket Settings', icon: 'M9.592 2.23a1.66 1.66 0 0 1 2.816 0l.235.39a1.66 1.66 0 0 0 1.956.764l.435-.145a1.66 1.66 0 0 1 2.054 1.926l-.08.45a1.66 1.66 0 0 0 1.12 1.833l.427.143a1.66 1.66 0 0 1 .986 2.63l-.286.353a1.66 1.66 0 0 0-.25 2.115l.25.353a1.66 1.66 0 0 1-.986 2.63l-.427.143a1.66 1.66 0 0 0-1.12 1.833l.08.45a1.66 1.66 0 0 1-2.054 1.926l-.435-.145a1.66 1.66 0 0 0-1.956.764l-.235.39a1.66 1.66 0 0 1-2.816 0l-.235-.39a1.66 1.66 0 0 0-1.956-.764l-.435.145a1.66 1.66 0 0 1-2.054-1.926l.08-.45a1.66 1.66 0 0 0-1.12-1.833l-.427-.143a1.66 1.66 0 0 1-.986-2.63l.286-.353a1.66 1.66 0 0 0 .25-2.115l-.25-.353a1.66 1.66 0 0 1 .986-2.63l.427-.143a1.66 1.66 0 0 0 1.12-1.833l-.08-.45a1.66 1.66 0 0 1 2.054-1.926l.435.145a1.66 1.66 0 0 0 1.956-.764l.235-.39ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z' },
-  { id: 'backup', label: 'Backup & Restore', icon: 'M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z' }
+  { id: 'drive', label: 'My Files', icon: 'folder' },
+  { id: 'settings', label: 'Bucket Settings', icon: 'settings' },
+  { id: 'backup', label: 'Backup & Restore', icon: 'download' }
 ]
 
 function FilePreviewThumbnail({ file, bucket }) {
@@ -346,21 +347,21 @@ export default function Browser() {
 
   function getFileContextItems(f) {
     return [
-      { label: 'Preview', icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z', onClick: () => setPreviewFile(f) },
-      { label: 'Download', icon: 'M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', onClick: () => handleDownload(f.id) },
-      { label: 'Rename', icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z', onClick: () => { setRenameTarget(f); setRenameValue(f.original_name) } },
-      { label: 'Details', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z', onClick: () => handleDetailsClick(f) },
+      { label: 'Preview', icon: 'eye', onClick: () => setPreviewFile(f) },
+      { label: 'Download', icon: 'download', onClick: () => handleDownload(f.id) },
+      { label: 'Rename', icon: 'pencil', onClick: () => { setRenameTarget(f); setRenameValue(f.original_name) } },
+      { label: 'Details', icon: 'info', onClick: () => handleDetailsClick(f) },
       { separator: true },
-      { label: 'Delete', icon: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16', danger: true, onClick: () => handleDelete(f.id) },
+      { label: 'Delete', icon: 'trash', danger: true, onClick: () => handleDelete(f.id) },
     ]
   }
 
   function getFolderContextItems(f) {
     return [
-      { label: 'Open', icon: 'M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z', onClick: () => setFolderPath(f.path) },
-      { label: 'Details', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z', onClick: () => handleDetailsClick(f, true) },
+      { label: 'Open', icon: 'folder-open', onClick: () => setFolderPath(f.path) },
+      { label: 'Details', icon: 'info', onClick: () => handleDetailsClick(f, true) },
       { separator: true },
-      { label: 'Delete', icon: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16', danger: true, onClick: () => handleFolderDelete(f.path) },
+      { label: 'Delete', icon: 'trash', danger: true, onClick: () => handleFolderDelete(f.path) },
     ]
   }
 
@@ -390,7 +391,7 @@ export default function Browser() {
         <div className="flex items-center gap-3 w-60 shrink-0">
           <button onClick={() => navigate('/')} className="flex items-center gap-2.5 cursor-pointer">
             <div className="w-9 h-9 bg-zinc-800 dark:bg-zinc-200 rounded-xl flex items-center justify-center shadow-md shadow-zinc-800/10">
-              <svg className="w-5 h-5 text-white dark:text-zinc-900" viewBox="0 0 24 24" fill="currentColor"><path d="M14 10H4v2h10v-2zm0-4H4v2h10V6zM4 16h6v-2H4v2zm18-4v6l-4-4 4-4zm-2-6h-8v2h8V6zm-8 12h8v-2h-8v2z"/></svg>
+              <Icon name="layout-grid" size={20} className="text-white dark:text-zinc-900" />
             </div>
             <span className="text-xl font-medium text-gray-800 dark:text-[#f2f2f2] tracking-tight" style={{ fontFamily: "'Product Sans', 'Google Sans', Arial" }}>SaimumFile</span>
           </button>
@@ -406,15 +407,7 @@ export default function Browser() {
             className="p-2.5 rounded-full hover:bg-gray-200/60 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-pointer transition-colors"
             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           >
-            {theme === 'dark' ? (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
-            )}
+            {theme === 'dark' ? <Icon name="sun" size={20} /> : <Icon name="moon" size={20} />}
           </button>
 
           <button
@@ -422,10 +415,7 @@ export default function Browser() {
             className="p-2.5 rounded-full hover:bg-gray-200/60 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-pointer transition-colors"
             title="Bucket S3 Settings / Credentials"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+            <Icon name="settings" size={20} />
           </button>
 
           <button
@@ -433,9 +423,7 @@ export default function Browser() {
             className="p-2.5 rounded-full hover:bg-gray-200/60 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-pointer transition-colors"
             title="Go to Buckets Dashboard"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
+            <Icon name="home" size={20} />
           </button>
         </div>
       </header>
@@ -451,9 +439,7 @@ export default function Browser() {
                 onClick={() => setShowNewMenu(!showNewMenu)}
                 className="flex items-center gap-3 px-6 py-3.5 bg-white dark:bg-[#2d2e30] text-gray-700 dark:text-[#e3e3e3] rounded-2xl shadow-[0_1px_3px_1px_rgba(60,64,67,0.15),0_1px_2px_0_rgba(60,64,67,0.3)] hover:shadow-[0_4px_8px_3px_rgba(60,64,67,0.15),0_1px_3px_0_rgba(60,64,67,0.3)] hover:bg-[#fafafa] dark:hover:bg-[#353638] transition-all font-medium text-sm cursor-pointer select-none border border-gray-250/20 dark:border-gray-700/50"
               >
-                <svg className="w-5 h-5 text-gray-700 dark:text-[#e3e3e3]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
+                <Icon name="plus" size={20} className="text-gray-700 dark:text-[#e3e3e3]" strokeWidth={2.5} />
                 New
               </button>
 
@@ -463,14 +449,14 @@ export default function Browser() {
                     onClick={() => { setShowNewMenu(false); setShowFolderModal(true) }}
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-[#e3e3e3] hover:bg-gray-100 dark:hover:bg-gray-800 text-left cursor-pointer"
                   >
-                    <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 13h6m-3-3v6m-5 4h10a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                    <Icon name="folder-plus" size={20} className="text-gray-500 dark:text-gray-400" />
                     New Folder
                   </button>
                   <button
                     onClick={() => { setShowNewMenu(false); fileInput.current?.click() }}
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-[#e3e3e3] hover:bg-gray-100 dark:hover:bg-gray-800 text-left cursor-pointer"
                   >
-                    <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                    <Icon name="upload" size={20} className="text-gray-500 dark:text-gray-400" />
                     File Upload
                   </button>
                 </div>
@@ -496,9 +482,7 @@ export default function Browser() {
                       : 'text-gray-600 dark:text-[#c4c7c5] hover:bg-gray-200/50 dark:hover:bg-gray-800/40'
                   }`}
                 >
-                  <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-                  </svg>
+                  <Icon name={item.icon} size={20} className="shrink-0" strokeWidth={1.5} />
                   {item.label}
                 </div>
               ))}
@@ -519,7 +503,7 @@ export default function Browser() {
                 onClick={() => { localStorage.removeItem('token'); navigate('/login') }}
                 className="mt-4 w-full flex items-center justify-center gap-2 py-2 text-xs text-gray-500 dark:text-gray-400 hover:bg-gray-200/50 dark:hover:bg-gray-800 rounded-full transition-colors cursor-pointer border border-transparent hover:border-gray-200/30"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                <Icon name="log-out" size={14} />
                 Sign Out
               </button>
             </div>
@@ -541,7 +525,7 @@ export default function Browser() {
           {sidebarActive === 'drive' && dragOver && (
             <div className="absolute inset-0 z-40 flex items-center justify-center bg-zinc-500/5 pointer-events-none">
               <div className="bg-white dark:bg-[#2d2e30] border-2 border-dashed border-zinc-450 dark:border-zinc-600 rounded-3xl p-12 text-center shadow-xl max-w-sm">
-                <svg className="w-12 h-12 text-zinc-800 dark:text-zinc-300 mx-auto mb-3 animate-bounce" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                <Icon name="upload-cloud" size={48} className="text-zinc-800 dark:text-zinc-300 mx-auto mb-3 animate-bounce" strokeWidth={1.5} />
                 <p className="text-zinc-800 dark:text-zinc-200 font-medium">Drop files to upload</p>
                 <p className="text-xs text-gray-400 mt-1">Upload directly into "{parts().pop() || bucket}"</p>
               </div>
@@ -560,7 +544,7 @@ export default function Browser() {
                   </button>
                   {parts().map((p, i) => (
                     <span key={i} className="flex items-center gap-1 shrink-0">
-                      <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                      <Icon name="chevron-right" size={14} className="text-gray-400" strokeWidth={2.5} />
                       <button onClick={() => setFolderPath('/' + parts().slice(0, i + 1).join('/'))} className="text-gray-800 dark:text-gray-200 hover:text-zinc-900 dark:hover:text-zinc-200 px-2.5 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800/70 transition-colors">{p}</button>
                     </span>
                   ))}
@@ -579,7 +563,7 @@ export default function Browser() {
                       }`}
                       title="Grid View"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                      <Icon name="grid-view" size={16} />
                     </button>
                     <button
                       onClick={() => setViewMode('list')}
@@ -590,12 +574,12 @@ export default function Browser() {
                       }`}
                       title="List View"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                      <Icon name="list-view" size={16} />
                     </button>
                   </div>
 
                   <button onClick={() => setShowDetails(!showDetails)} className={`p-2 rounded-full ${showDetails ? 'bg-zinc-100 text-zinc-800 dark:bg-zinc-800/40 dark:text-zinc-200' : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400'} cursor-pointer transition-colors`} title="Details Panel">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <Icon name="info" size={20} strokeWidth={1.5} />
                   </button>
                 </div>
               </header>
@@ -605,7 +589,7 @@ export default function Browser() {
                   onClick={goUp}
                   className="px-3.5 py-1.5 text-xs font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                  <Icon name="undo-2" size={14} strokeWidth={2.5} />
                   Back Up
                 </button>
 
@@ -613,7 +597,7 @@ export default function Browser() {
                   onClick={() => setShowFolderModal(true)}
                   className="px-3.5 py-1.5 text-xs font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                  <Icon name="plus" size={14} strokeWidth={2.5} />
                   New Folder
                 </button>
               </div>
@@ -645,12 +629,12 @@ export default function Browser() {
                     <div className="text-center p-6 select-none">
                       {searchQuery ? (
                         <>
-                          <svg className="w-16 h-16 text-gray-300 dark:text-gray-650 mx-auto mb-4" fill="none" stroke="currentColor" strokeWidth={1} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                          <Icon name="search" size={64} className="text-gray-300 dark:text-gray-650 mx-auto mb-4" strokeWidth={1} />
                           <p className="text-gray-400 dark:text-gray-500 text-sm">No items matching "{searchQuery}"</p>
                         </>
                       ) : (
                         <>
-                          <svg className="w-20 h-20 text-gray-200 dark:text-gray-800 mx-auto mb-4" fill="none" stroke="currentColor" strokeWidth={0.8} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                          <Icon name="folder-open" size={80} className="text-gray-200 dark:text-gray-800 mx-auto mb-4" strokeWidth={0.8} />
                           <p className="text-gray-400 dark:text-gray-550 text-sm mb-1 font-medium">This folder is empty</p>
                           <p className="text-gray-350 dark:text-gray-600 text-xs">Drag and drop files here to upload instantly</p>
                         </>
@@ -688,9 +672,7 @@ export default function Browser() {
                                 className="p-1 rounded-full text-gray-500 hover:bg-black/5 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shrink-0"
                                 title="More actions"
                               >
-                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                  <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-                                </svg>
+                                <Icon name="three-dots" size={16} />
                               </button>
                             </div>
                           ))}
@@ -732,9 +714,7 @@ export default function Browser() {
                                   className="p-1 rounded-full text-gray-500 hover:bg-black/5 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shrink-0"
                                   title="More actions"
                                 >
-                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-                                  </svg>
+                                  <Icon name="three-dots" size={16} />
                                 </button>
                               </div>
 
@@ -797,9 +777,7 @@ export default function Browser() {
                                 onClick={(e) => { e.stopPropagation(); handleContextMenu(e, f, true) }}
                                 className="p-1 rounded-full text-gray-450 hover:bg-black/5 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shrink-0"
                               >
-                                <svg className="w-4 h-4 mx-auto" fill="currentColor" viewBox="0 0 24 24">
-                                  <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-                                </svg>
+                                <Icon name="three-dots" size={16} className="mx-auto" />
                               </button>
                             </td>
                           </tr>
@@ -837,9 +815,7 @@ export default function Browser() {
                                 onClick={(e) => { e.stopPropagation(); handleContextMenu(e, f, false) }}
                                 className="p-1 rounded-full text-gray-455 hover:bg-black/5 dark:hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shrink-0"
                               >
-                                <svg className="w-4 h-4 mx-auto" fill="currentColor" viewBox="0 0 24 24">
-                                  <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-                                </svg>
+                                <Icon name="three-dots" size={16} className="mx-auto" />
                               </button>
                             </td>
                           </tr>
@@ -946,7 +922,7 @@ export default function Browser() {
                       onClick={handleDeleteBucket}
                       className="py-2.5 px-6 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/40 rounded-xl text-xs font-semibold border border-red-200/50 dark:border-red-900/30 transition-colors cursor-pointer text-center flex items-center gap-1.5 inline-flex"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      <Icon name="trash" size={14} />
                       Delete Bucket and All Files
                     </button>
                   </div>
@@ -954,7 +930,7 @@ export default function Browser() {
               ) : (
                 <div className="max-w-2xl space-y-4 animate-fade-in">
                   <p className="text-xs text-zinc-700 bg-zinc-100 dark:bg-zinc-800/30 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-800/50 rounded-xl p-4 flex items-center gap-2.5">
-                    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <Icon name="info" size={16} className="shrink-0" />
                     Use these credentials to configure external S3 clients or SDKs.
                   </p>
                   {[
@@ -973,7 +949,7 @@ export default function Browser() {
                         className="text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100 shrink-0 ml-4 p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors cursor-pointer"
                         title={`Copy ${item.label}`}
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                        <Icon name="copy" size={16} />
                       </button>
                     </div>
                   ))}
@@ -983,7 +959,7 @@ export default function Browser() {
                       onClick={handleRegenerateKeys}
                       className="px-5 py-2.5 bg-red-500/10 hover:bg-red-500/25 text-red-650 dark:text-red-400 rounded-xl text-xs font-semibold cursor-pointer border border-red-250/20 dark:border-red-900/30 transition-all flex items-center gap-2"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+                      <Icon name="refresh-cw" size={16} />
                       Regenerate Credentials
                     </button>
                   </div>
@@ -999,7 +975,7 @@ export default function Browser() {
                         }}
                         className="text-xs text-zinc-700 hover:text-zinc-900 dark:text-zinc-400 font-semibold flex items-center gap-1.5 cursor-pointer hover:underline"
                       >
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                        <Icon name="copy" size={14} />
                         Copy all as .env
                       </button>
                     </div>
@@ -1037,11 +1013,7 @@ AWS_BUCKET=${bucketKeys?.name || ''}`}
                     disabled={backupLoading}
                     className="w-full py-3 bg-zinc-800 hover:bg-zinc-900 dark:bg-zinc-700 dark:hover:bg-zinc-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-xl text-sm font-semibold cursor-pointer transition-colors shadow-sm flex items-center justify-center gap-2"
                   >
-                    {backupLoading ? (
-                      <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg>
-                    ) : (
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
-                    )}
+                    {backupLoading ? <Icon name="spinner" size={16} className="animate-spin text-white" /> : <Icon name="download" size={16} strokeWidth={2.5} />}
                     {backupLoading ? 'Creating backup archive...' : 'Download Backup Archive'}
                   </button>
                 </div>
@@ -1067,13 +1039,13 @@ AWS_BUCKET=${bucketKeys?.name || ''}`}
                     <div className="flex flex-col items-center justify-center">
                       {restoreLoading ? (
                         <div className="flex flex-col items-center">
-                          <svg className="animate-spin h-8 w-8 text-zinc-700 dark:text-zinc-300 mb-2" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg>
+                          <Icon name="spinner" size={32} className="text-zinc-700 dark:text-zinc-300 mb-2 animate-spin" />
                           <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Restoring system data...</p>
                           <p className="text-[10px] text-gray-400 dark:text-gray-550 mt-0.5">Please do not refresh this page.</p>
                         </div>
                       ) : (
                         <>
-                          <svg className="w-10 h-10 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                          <Icon name="upload-cloud" size={40} className="text-gray-400 mb-2" strokeWidth={1.5} />
                           <p className="text-xs font-medium text-gray-600 dark:text-gray-300">Click or drag a backup file here</p>
                           <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">saimumfile-backup-*.tar.gz only</p>
                         </>

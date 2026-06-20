@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { getBuckets, createBucket, deleteBucket, getStats, getDisk, getBucketKeys, updateBucketLabel, getBucketStats, downloadBackup, restoreBackup } from '../api/client'
 import Toast from '../components/Toast'
 import { useTheme } from '../components/ThemeContext'
+import Icon from '../components/Icon'
 
 function fmtSize(bytes) {
   if (!bytes) return '0 B'
@@ -130,7 +131,7 @@ export default function Dashboard() {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-zinc-800 dark:bg-zinc-200 rounded-xl flex items-center justify-center shadow-md shadow-zinc-800/10">
-              <svg className="w-5 h-5 text-white dark:text-zinc-900" viewBox="0 0 24 24" fill="currentColor"><path d="M14 10H4v2h10v-2zm0-4H4v2h10V6zM4 16h6v-2H4v2zm18-4v6l-4-4 4-4zm-2-6h-8v2h8V6zm-8 12h8v-2h-8v2z"/></svg>
+              <Icon name="layout-grid" size={20} className="text-white dark:text-zinc-900" />
             </div>
             <span className="text-xl font-medium text-gray-855 dark:text-[#f2f2f2] tracking-tight" style={{ fontFamily: "'Product Sans', 'Google Sans', Arial" }}>SaimumFile</span>
           </div>
@@ -151,15 +152,7 @@ export default function Dashboard() {
               className="p-2.5 rounded-full hover:bg-gray-200/60 dark:hover:bg-gray-850 text-gray-500 dark:text-gray-400 cursor-pointer transition-colors"
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
-              {theme === 'dark' ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-              )}
+              {theme === 'dark' ? <Icon name="sun" size={20} /> : <Icon name="moon" size={20} />}
             </button>
 
             <button
@@ -169,9 +162,7 @@ export default function Dashboard() {
               }`}
               title={showBackup ? 'Back to Buckets' : 'Backup & Restore Data'}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-              </svg>
+              <Icon name="download" size={20} />
             </button>
 
             <button
@@ -215,11 +206,7 @@ export default function Dashboard() {
                   disabled={backupLoading}
                   className="w-full py-3 bg-zinc-800 hover:bg-zinc-900 dark:bg-zinc-700 dark:hover:bg-zinc-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-xl text-sm font-semibold cursor-pointer transition-colors shadow-sm flex items-center justify-center gap-2"
                 >
-                  {backupLoading ? (
-                    <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg>
-                  ) : (
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  )}
+                  {backupLoading ? <Icon name="spinner" size={16} className="animate-spin text-white" /> : <Icon name="plus" size={16} strokeWidth={2.5} />}
                   {backupLoading ? 'Creating backup archive...' : 'Download Backup Archive'}
                 </button>
               </div>
@@ -245,13 +232,13 @@ export default function Dashboard() {
                   <div className="flex flex-col items-center justify-center">
                     {restoreLoading ? (
                       <div className="flex flex-col items-center">
-                        <svg className="animate-spin h-8 w-8 text-zinc-700 dark:text-zinc-300 mb-2" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/></svg>
+                        <Icon name="spinner" size={32} className="text-zinc-700 dark:text-zinc-300 mb-2 animate-spin" />
                         <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Restoring system data...</p>
                         <p className="text-[10px] text-gray-450 dark:text-gray-500 mt-0.5">Please do not refresh this page.</p>
                       </div>
                     ) : (
                       <>
-                        <svg className="w-10 h-10 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                        <Icon name="upload-cloud" size={40} className="text-gray-400 mb-2" strokeWidth={1.5} />
                         <p className="text-xs font-medium text-gray-600 dark:text-gray-300">Click or drag a backup file here</p>
                         <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">saimumfile-backup-*.tar.gz only</p>
                       </>
@@ -272,7 +259,7 @@ export default function Dashboard() {
                 onClick={() => setShowModal(true)}
                 className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-900 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-white px-5 py-2.5 rounded-2xl text-sm font-medium transition-all shadow-[0_1px_2px_rgba(0,0,0,0.05)] hover:shadow-md hover:shadow-zinc-805/10 cursor-pointer"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+                <Icon name="plus" size={16} strokeWidth={2.5} />
                 New Bucket
               </button>
             </div>
@@ -311,9 +298,7 @@ export default function Dashboard() {
 
             {buckets.length === 0 ? (
               <div className="text-center py-28 bg-white dark:bg-[#131314] rounded-[24px] border border-gray-200/50 dark:border-gray-800/80 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
-                <svg className="w-20 h-20 text-gray-200 dark:text-gray-800 mx-auto mb-4" fill="none" stroke="currentColor" strokeWidth={0.8} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                </svg>
+                <Icon name="folder" size={80} className="text-gray-200 dark:text-gray-800 mx-auto mb-4" strokeWidth={0.8} />
                 <p className="text-gray-550 dark:text-gray-400 text-sm mb-1 font-medium">No buckets available</p>
                 <p className="text-gray-400 dark:text-[#a8c7fa] text-xs">Create a bucket to upload, organize, and preview files</p>
               </div>
@@ -327,9 +312,7 @@ export default function Dashboard() {
                   >
                     <div className="flex items-start justify-between">
                       <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800/60 rounded-xl flex items-center justify-center shrink-0">
-                        <svg className="w-5 h-5 text-zinc-600 dark:text-zinc-350" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0v3.75m-16.5-3.75v3.75" />
-                        </svg>
+                      <Icon name="database" size={20} className="text-zinc-600 dark:text-zinc-350" strokeWidth={1.5} />
                       </div>
                       <div className="flex items-center gap-1">
                         <button
@@ -340,17 +323,14 @@ export default function Dashboard() {
                           className="text-gray-400 hover:text-zinc-700 dark:hover:text-zinc-300 p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800/40 transition-colors cursor-pointer"
                           title="Bucket Settings"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          </svg>
+                          <Icon name="settings" size={16} />
                         </button>
                         <button
                           onClick={e => handleDelete(b.name, e)}
                           className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 p-1.5 rounded-full hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer"
                           title="Delete Bucket"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                          <Icon name="trash" size={16} />
                         </button>
                       </div>
                     </div>
@@ -406,7 +386,7 @@ export default function Dashboard() {
                 <p className="text-[10px] text-gray-400 dark:text-gray-550 font-mono mt-0.5">Bucket: {keyModal.name}</p>
               </div>
               <button onClick={() => setKeyModal(null)} className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-305 cursor-pointer p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 shrink-0">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                <Icon name="x" size={20} />
               </button>
             </div>
 
@@ -477,7 +457,7 @@ export default function Dashboard() {
                     onClick={(e) => handleDelete(keyModal.name, e)}
                     className="w-full py-2.5 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/40 rounded-xl text-xs font-semibold border border-red-200/50 dark:border-red-900/30 transition-colors cursor-pointer text-center flex items-center justify-center gap-1.5"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    <Icon name="trash" size={14} />
                     Delete Bucket and All Files
                   </button>
                 </div>
@@ -485,7 +465,7 @@ export default function Dashboard() {
             ) : (
               <div>
                 <p className="text-xs text-zinc-700 bg-zinc-100 dark:bg-zinc-800/30 dark:text-zinc-300 border border-zinc-200/50 dark:border-zinc-800/50 rounded-xl p-3 mb-4 flex items-center gap-2.5">
-                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <Icon name="info" size={16} className="shrink-0" />
                   Use these credentials to configure external S3 clients or SDKs.
                 </p>
                 {[
@@ -504,7 +484,7 @@ export default function Dashboard() {
                         onClick={() => { navigator.clipboard.writeText(item.val); showToast('Copied!', 'success') }}
                         className="text-zinc-650 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 shrink-0 ml-2 p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors cursor-pointer"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                        <Icon name="copy" size={16} />
                       </button>
                     </div>
                   </div>

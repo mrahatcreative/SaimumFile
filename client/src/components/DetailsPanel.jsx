@@ -1,4 +1,5 @@
 import FileIcon from './FileIcon'
+import Icon from './Icon'
 
 function fmtSize(bytes) {
   if (!bytes) return '0 B'
@@ -21,9 +22,7 @@ export default function DetailsPanel({ file, folder, onClose, onDownload, onRena
       <div className="h-14 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between px-4 shrink-0">
         <h3 className="text-sm font-medium text-gray-700 dark:text-[#e3e3e3]">Details</h3>
         <button onClick={onClose} className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-pointer">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <Icon name="x" size={16} />
         </button>
       </div>
 
@@ -67,15 +66,15 @@ export default function DetailsPanel({ file, folder, onClose, onDownload, onRena
               <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Actions</p>
               <div className="space-y-1">
                 <button onClick={() => onDownload(file.id)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  <Icon name="download" size={16} />
                   Download
                 </button>
                 <button onClick={() => onRename(file)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors cursor-pointer">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                  <Icon name="pencil" size={16} />
                   Rename
                 </button>
                 <button onClick={() => onDelete(file.id)} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg transition-colors cursor-pointer">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  <Icon name="trash" size={16} />
                   Delete
                 </button>
               </div>

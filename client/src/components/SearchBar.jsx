@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import Icon from './Icon'
 
 export default function SearchBar({ onSearch }) {
   const [query, setQuery] = useState('')
@@ -24,9 +25,7 @@ export default function SearchBar({ onSearch }) {
           : 'bg-[#eaf1fb] dark:bg-[#1e1e20] hover:bg-[#dfe6f2] dark:hover:bg-[#28292c] text-gray-600 dark:text-[#c4c7c5]'
       }`}
     >
-      <svg className="w-5 h-5 mr-3 shrink-0 opacity-70" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
+      <Icon name="search" size={20} className="mr-3 shrink-0 opacity-70" />
       <input
         ref={inputRef}
         type="text"
@@ -43,9 +42,7 @@ export default function SearchBar({ onSearch }) {
           className="p-1 rounded-full hover:bg-gray-300/50 dark:hover:bg-gray-700/50 text-gray-500 dark:text-gray-400 cursor-pointer transition-colors"
           title="Clear search"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <Icon name="x" size={16} />
         </button>
       )}
     </div>

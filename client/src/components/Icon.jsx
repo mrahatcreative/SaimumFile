@@ -1,0 +1,65 @@
+import {
+  Search, X, Download, Pencil, Trash2, Folder, File, Plus, Settings, Home,
+  Sun, Moon, Upload, ChevronRight, ChevronLeft, Grid3x3, List, Info,
+  MoreVertical, Copy, Check, AlertTriangle, RefreshCw, FolderPlus, Music,
+  AlertCircle, LayoutGrid, LogOut, ExternalLink, FileText, Image,
+  Loader, Undo2, Eye, FolderOpen, UploadCloud, Database, HardDrive
+} from 'lucide-react'
+
+const icons = {
+  search: Search,
+  x: X,
+  close: X,
+  download: Download,
+  pencil: Pencil,
+  edit: Pencil,
+  trash: Trash2,
+  delete: Trash2,
+  folder: Folder,
+  file: File,
+  plus: Plus,
+  add: Plus,
+  settings: Settings,
+  home: Home,
+  sun: Sun,
+  moon: Moon,
+  upload: Upload,
+  'chevron-right': ChevronRight,
+  'chevron-left': ChevronLeft,
+  grid: Grid3x3,
+  'grid-view': Grid3x3,
+  list: List,
+  'list-view': List,
+  info: Info,
+  'more-vertical': MoreVertical,
+  'three-dots': MoreVertical,
+  copy: Copy,
+  check: Check,
+  'alert-triangle': AlertTriangle,
+  'alert-circle': AlertCircle,
+  'refresh-cw': RefreshCw,
+  refresh: RefreshCw,
+  'folder-plus': FolderPlus,
+  'new-folder': FolderPlus,
+  music: Music,
+  'layout-grid': LayoutGrid,
+  'log-out': LogOut,
+  'external-link': ExternalLink,
+  'file-text': FileText,
+  image: Image,
+  loader: Loader,
+  spinner: Loader,
+  'undo-2': Undo2,
+  back: Undo2,
+  eye: Eye,
+  'folder-open': FolderOpen,
+  'upload-cloud': UploadCloud,
+  database: Database,
+  'hard-drive': HardDrive,
+}
+
+export default function Icon({ name, size = 20, className = '', strokeWidth = 2 }) {
+  const LucideIcon = icons[name?.toLowerCase()]
+  if (!LucideIcon) return null
+  return <LucideIcon size={size} className={className} strokeWidth={strokeWidth} />
+}
