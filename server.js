@@ -5,6 +5,8 @@ const fs = require('fs');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const initSqlJs = require('sql.js');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 8335;
@@ -58,10 +60,15 @@ async function initDb() {
   saveDb();
 }
 
+let saveDbTimer = null;
 function saveDb() {
-  const data = db.export();
-  fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-  fs.writeFileSync(DB_PATH, Buffer.from(data));
+  if (saveDbTimer) clearTimeout(saveDbTimer);
+  saveDbTimer = setTimeout(() => {
+    const data = db.export();
+    fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+    fs.writeFileSync(DB_PATH, Buffer.from(data));
+    saveDbTimer = null;
+  }, 1000);
 }
 
 function genId() { return crypto.randomUUID(); }
@@ -133,7 +140,11 @@ function verifySigV4(req, secretKey) {
   const signingKey = getSignatureKey(secretKey, p.date, p.region, p.service);
   const expected = hmac(signingKey, stringToSign).toString('hex');
 
-  return expected === p.signature ? p : null;
+  try {
+    return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(p.signature)) ? p : null;
+  } catch {
+    return null;
+  }
 }
 
 function findBucketByAccessKey(accessKey) {
@@ -208,7 +219,8 @@ function bucketAuth(req, res, next) {
 
 function sanitizeFolder(f) {
   if (!f || f === '') return '/';
-  return '/' + f.replace(/^\/+/, '').replace(/\/+$/, '');
+  const p = path.normalize('/' + f).replace(/\\/g, '/');
+  return p === '.' ? '/' : p;
 }
 
 function resolveBucketPath(bucket) {
@@ -226,7 +238,13 @@ function resolveFolderPath(bucket, folder) {
 
 /* ─── Body parsers + Global Middleware ─── */
 
-app.use(express.raw({ type: () => true, limit: '50mb' }));
+app.use(cors());
+
+app.use((req, res, next) => {
+  const ct = req.headers['content-type'] || '';
+  if (ct.includes('multipart')) return next();
+  express.raw({ type: () => true, limit: '50mb' })(req, res, next);
+});
 
 app.use((req, res, next) => {
   if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'DELETE') {
@@ -403,8 +421,14 @@ app.delete('/:bucket/*', (req, res, next) => {
    Web API Routes (under /api/)
    ═══════════════════════════════════════ */
 
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { error: 'Too many login attempts, please try again after 15 minutes' }
+});
+
 /* Login */
-app.post('/api/login', (req, res) => {
+app.post('/api/login', loginLimiter, (req, res) => {
   const { username, password } = req.body || {};
   if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
     return res.status(401).json({ error: 'Invalid credentials' });
@@ -417,7 +441,15 @@ app.use('/api', webAuth);
 
 /* Buckets CRUD */
 app.get('/api/buckets', (req, res) => {
-  const buckets = dbAll('SELECT id, name, label, access_key, created_at FROM buckets ORDER BY created_at DESC');
+  const buckets = dbAll(`
+    SELECT b.id, b.name, b.label, b.access_key, b.created_at,
+           COUNT(f.id) as files_count,
+           COALESCE(SUM(f.size), 0) as total_size
+    FROM buckets b
+    LEFT JOIN files f ON f.bucket = b.name
+    GROUP BY b.id, b.name, b.label, b.access_key, b.created_at
+    ORDER BY b.created_at DESC
+  `);
   res.json(buckets);
 });
 
@@ -435,6 +467,45 @@ app.post('/api/buckets', (req, res) => {
   saveDb();
   fs.mkdirSync(resolveBucketPath(name), { recursive: true });
   res.json({ id, name, label: label || name, access_key: accessKey, secret_key: secretKey });
+});
+
+app.get('/api/buckets/:name/keys', (req, res) => {
+  const { name } = req.params;
+  const bucket = dbGet('SELECT label, access_key, secret_key FROM buckets WHERE name = ?', [name]);
+  if (!bucket) return res.status(404).json({ error: 'Bucket not found' });
+  res.json(bucket);
+});
+
+app.post('/api/buckets/:name/keys/regenerate', (req, res) => {
+  const { name } = req.params;
+  const bucket = dbGet('SELECT label FROM buckets WHERE name = ?', [name]);
+  if (!bucket) return res.status(404).json({ error: 'Bucket not found' });
+
+  let accessKey;
+  let attempts = 0;
+  while (attempts < 10) {
+    accessKey = genKey();
+    const clash = dbGet('SELECT id FROM buckets WHERE access_key = ?', [accessKey]);
+    if (!clash) break;
+    attempts++;
+  }
+  const secretKey = genKey();
+  dbRun('UPDATE buckets SET access_key = ?, secret_key = ? WHERE name = ?', [accessKey, secretKey, name]);
+  saveDb();
+  res.json({ name, label: bucket.label, access_key: accessKey, secret_key: secretKey });
+});
+
+app.patch('/api/buckets/:name', (req, res) => {
+  const { name } = req.params;
+  const { label } = req.body;
+  if (!label || !label.trim()) {
+    return res.status(400).json({ error: 'Label is required' });
+  }
+  const bucket = dbGet('SELECT * FROM buckets WHERE name = ?', [name]);
+  if (!bucket) return res.status(404).json({ error: 'Bucket not found' });
+  dbRun('UPDATE buckets SET label = ? WHERE name = ?', [label.trim(), name]);
+  saveDb();
+  res.json({ ok: true, name, label: label.trim() });
 });
 
 app.delete('/api/buckets/:name', (req, res) => {
@@ -471,7 +542,11 @@ app.post('/api/upload/:bucket', upload.single('file'), (req, res) => {
   const file = req.file;
   const folder = sanitizeFolder(req.body.folder || '/');
   const b = dbGet('SELECT * FROM buckets WHERE name = ?', [bucket]);
-  if (!b) return res.status(404).json({ error: 'Bucket not found' });
+  
+  if (!b) {
+    if (file) fs.unlinkSync(file.path);
+    return res.status(404).json({ error: 'Bucket not found' });
+  }
   if (!file) return res.status(400).json({ error: 'No file' });
 
   const id = genId();
@@ -479,7 +554,8 @@ app.post('/api/upload/:bucket', upload.single('file'), (req, res) => {
   const storedName = id + ext;
   const targetDir = resolveFolderPath(bucket, folder);
   const targetPath = path.join(targetDir, storedName);
-  fs.renameSync(file.path, targetPath);
+  fs.copyFileSync(file.path, targetPath);
+  fs.unlinkSync(file.path);
 
   dbRun('INSERT INTO files (id, bucket, name, original_name, storage_path, size, mime_type, folder) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
     [id, bucket, storedName, file.originalname, targetPath, file.size, file.mimetype, folder]);
@@ -568,6 +644,21 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
+app.get('/api/disk', (req, res) => {
+  const { execSync } = require('child_process');
+  try {
+    const out = execSync('df -BG ' + STORAGE_PATH + ' | tail -1').toString();
+    const parts = out.trim().split(/\s+/);
+    if (parts.length >= 4) {
+      const total = parseInt(parts[1].replace('G', ''));
+      const used = parseInt(parts[2].replace('G', ''));
+      const available = parseInt(parts[3].replace('G', ''));
+      return res.json({ total, used, available, path: STORAGE_PATH, unit: 'GB' });
+    }
+  } catch {}
+  res.json({ total: 0, used: 0, available: 0, path: STORAGE_PATH, unit: 'GB' });
+});
+
 app.get('/api/stats/:bucket', (req, res) => {
   const { bucket } = req.params;
   const b = dbGet('SELECT * FROM buckets WHERE name = ?', [bucket]);
@@ -597,7 +688,8 @@ app.post('/api/external/:bucket/upload', bucketAuth, upload.single('file'), (req
   const storedName = id + ext;
   const targetDir = resolveFolderPath(req.bucket.name, folder);
   const targetPath = path.join(targetDir, storedName);
-  fs.renameSync(file.path, targetPath);
+  fs.copyFileSync(file.path, targetPath);
+  fs.unlinkSync(file.path);
   dbRun('INSERT INTO files (id, bucket, name, original_name, storage_path, size, mime_type, folder) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
     [id, req.bucket.name, storedName, file.originalname, targetPath, file.size, file.mimetype, folder]);
   saveDb();
@@ -622,6 +714,66 @@ app.delete('/api/external/:bucket/files/:id', bucketAuth, (req, res) => {
   res.json({ ok: true });
 });
 
+/* Backup and Restore */
+app.get('/api/backup', (req, res) => {
+  const tempDir = path.join('/tmp', 'saimum-backup-' + Date.now());
+  fs.mkdirSync(tempDir, { recursive: true });
+  fs.copyFileSync(DB_PATH, path.join(tempDir, 'saimum.db'));
+  
+  const cp = require('child_process');
+  try {
+    cp.execSync(`cp -r ${STORAGE_PATH} ${path.join(tempDir, 'files')}`);
+    const backupFile = path.join('/tmp', `saimum-backup-${Date.now()}.tar.gz`);
+    cp.execSync(`tar -czf ${backupFile} -C ${tempDir} .`);
+    fs.rmSync(tempDir, { recursive: true, force: true });
+    
+    res.download(backupFile, `saimumfile-backup-${new Date().toISOString().slice(0, 10)}.tar.gz`, (err) => {
+      if (fs.existsSync(backupFile)) fs.unlinkSync(backupFile);
+    });
+  } catch (err) {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+    res.status(500).json({ error: 'Failed to create backup: ' + err.message });
+  }
+});
+
+app.post('/api/restore', upload.single('file'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No backup file uploaded' });
+  const backupFile = req.file.path;
+  const tempExtractDir = path.join('/tmp', 'saimum-restore-' + Date.now());
+  fs.mkdirSync(tempExtractDir, { recursive: true });
+
+  const cp = require('child_process');
+  try {
+    cp.execSync(`tar -xzf ${backupFile} -C ${tempExtractDir}`);
+    const restoredDb = path.join(tempExtractDir, 'saimum.db');
+    const restoredFiles = path.join(tempExtractDir, 'files');
+
+    if (!fs.existsSync(restoredDb) || !fs.existsSync(restoredFiles)) {
+      throw new Error('Invalid backup archive structure (missing saimum.db or files)');
+    }
+
+    if (db) {
+      db.close();
+    }
+
+    fs.copyFileSync(restoredDb, DB_PATH);
+    fs.rmSync(STORAGE_PATH, { recursive: true, force: true });
+    cp.execSync(`cp -r ${restoredFiles} ${STORAGE_PATH}`);
+
+    initDb().then(() => {
+      fs.rmSync(tempExtractDir, { recursive: true, force: true });
+      if (fs.existsSync(backupFile)) fs.unlinkSync(backupFile);
+      res.json({ ok: true });
+    }).catch(err => {
+      res.status(500).json({ error: 'Failed to re-initialize DB after restore: ' + err.message });
+    });
+  } catch (err) {
+    fs.rmSync(tempExtractDir, { recursive: true, force: true });
+    if (fs.existsSync(backupFile)) fs.unlinkSync(backupFile);
+    res.status(500).json({ error: err.message || 'Failed to restore backup' });
+  }
+});
+
 /* ─── Static files + SPA fallback ─── */
 app.use(express.static(path.join(__dirname, 'client', 'dist')));
 app.get('*', (req, res) => {
@@ -634,7 +786,9 @@ initDb().then(() => {
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`SaimumFile running on http://0.0.0.0:${PORT}`);
     console.log(`Storage: ${STORAGE_PATH}`);
-    console.log(`Admin: ${ADMIN_USERNAME}`);
+    if (ADMIN_USERNAME === 'admin' && ADMIN_PASSWORD === 'admin123') {
+      console.warn('⚠️ WARNING: Using default admin credentials (admin/admin123). Please change them in production! ⚠️');
+    }
   });
 }).catch(err => {
   console.error('Failed to init:', err);

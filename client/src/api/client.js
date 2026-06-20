@@ -109,7 +109,50 @@ export async function getStats() {
   return r.json()
 }
 
+export async function getDisk() {
+  const r = await authFetch(API + '/disk')
+  return r.json()
+}
+
 export async function getBucketStats(bucket) {
   const r = await authFetch(API + '/stats/' + bucket)
   return r.json()
 }
+
+export async function getBucketKeys(name) {
+  const r = await authFetch(API + '/buckets/' + name + '/keys')
+  return r.json()
+}
+
+export async function updateBucketLabel(name, label) {
+  const r = await authFetch(API + '/buckets/' + name, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ label }),
+  })
+  return r.json()
+}
+
+export async function downloadBackup() {
+  const r = await authFetch(API + '/backup')
+  if (!r.ok) throw new Error('Backup failed')
+  return r.blob()
+}
+
+export async function restoreBackup(file) {
+  const form = new FormData()
+  form.append('file', file)
+  const r = await authFetch(API + '/restore', {
+    method: 'POST',
+    body: form
+  })
+  return r.json()
+}
+
+export async function regenerateBucketKeys(name) {
+  const r = await authFetch(API + '/buckets/' + name + '/keys/regenerate', {
+    method: 'POST',
+  })
+  return r.json()
+}
+

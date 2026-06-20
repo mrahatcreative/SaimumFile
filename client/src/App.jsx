@@ -11,11 +11,12 @@ function RequireAuth({ children }) {
 
 function Layout({ children }) {
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-[#f8fafd] text-[#1f1f1f] dark:bg-[#1B1B1B] dark:text-[#e3e3e3] transition-colors duration-200">
       {children}
     </div>
   )
 }
+
 
 export default function App() {
   return (

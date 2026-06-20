@@ -8,7 +8,9 @@
     "dev": "node server.js & cd client && npm run dev"
   },
   "dependencies": {
+    "cors": "^2.8.6",
     "express": "^4.21.2",
+    "express-rate-limit": "^8.5.2",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "sql.js": "^1.11.0",

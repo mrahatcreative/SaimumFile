@@ -3,3 +3,7 @@ client/node_modules/
 client/dist/
 *.db
 /tmp/
+data/
+.env
+*.tar.gz
+*.log
